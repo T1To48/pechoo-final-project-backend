@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const driverSchema=new mongoose.Schema({
+const userSchema=new mongoose.Schema({
     name:{
         type:String,
         trim:true,
@@ -18,6 +18,7 @@ const driverSchema=new mongoose.Schema({
     },
     password:{
         type:String,
+        required: true,
         minLength:[8,"password length cannot be less than 8 characters"]
     },
     phone:{
@@ -27,9 +28,37 @@ const driverSchema=new mongoose.Schema({
 
     },
     address:{
-        
+        addressName:{
+            type:String,
+        },
+        cords:{
+            latitude:{
+                type:Number,
+            },
+            longitude:{
+                type:Number,
+            }
+        },
+
+    },
+    userType:{
+        type:String,
+        require:[true,"Please choose a role: Restaurant or Driver"],
+        enum:["Restaurant","Driver"],
+    },
+    isActive:{
+      type:Boolean,
+      default:false,
+      validate:{
+        validator:function (value){
+          if(this.userType==="Driver"){
+            return typeof value==="boolean"
+          }
+          return false;
+        },
+        message:"isActive field is only allowed for Driver "
+      }
     }
-    
 },{
     versionKey:false,
     toJSON:{
@@ -48,6 +77,7 @@ const driverSchema=new mongoose.Schema({
     }
   })
   
-const driverModel = mongoose.model("driverModel", driverSchema);
+const userModel = mongoose.model("userModel", userSchema);
 
-export default driverModel;
+export default userModel;
+

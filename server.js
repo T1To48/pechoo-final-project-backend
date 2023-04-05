@@ -5,8 +5,7 @@ import cors from "cors";
 import morgan from "morgan";
 
 import connectDB from "./config/db.js";
- import restaurantRouter from "./routes/restaurantRoute.js";
-// import driverRoute from "./routes/driverRoute.js";
+ import userRouter from "./routes/userRouter.js";
 // import orderRoute from "./routes/orderRoute.js";
 
 dotenv.config({ path: "./config/config.env" });
@@ -25,8 +24,7 @@ app.get("/", (req, res) => {
 });
 
 
- app.use("/delivey-app", restaurantRouter);
-// app.use("/delivey-app", driverRoute);
+ app.use("/delivery-app/v1", userRouter);
 // app.use("/delivey-app", orderRoute);
 
 const PORT = process.env.PORT || 5000;

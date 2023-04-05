@@ -4,7 +4,7 @@ import {
   restaurantLogin,
 //   deleteRestaurantById,
 } from "../controllers/restaurantController.js";
-import { protect } from "../middlewares/restaurantAuthMiddleware.js";
+import { protect } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 

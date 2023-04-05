@@ -2,39 +2,40 @@ import bcrypt from "bcryptjs"
 import { generateToken } from "../utils/generateToken.js";
 import asyncHandler from "../middlewares/asyncHandler.js";
 
-import Restaurant from "../models/restaurantModel.js";
+import User from "../models/userModel.js";
 
-export const addRestaurant = asyncHandler(async (req,res,next) => {
+export const register = asyncHandler(async (req,res,next) => {
 
     const {email,password}=req.body;
-
     const salt=await bcrypt.genSalt(10);
     const hashedPassword=await bcrypt.hash(password,salt);
-
-  const newRestaurant = await Restaurant.create({
-    email,
+    if(password.length<8){
+      return next(new Error("password length cannot be less than 8 characters "))
+    }
+  const newUser = await User.create({
+    ...req.body,
     password:hashedPassword,
   });
   
-  if(newRestaurant){
+  if(newUser){
     res.status(200).json({
         success:true,
-        data:newRestaurant
+        data:newUser
   })
   }
   else{
-    next(new Error("🚨🚨🚨 Error in 🚨 newRestaurant 🚨 function"))
+    next(new Error("🚨🚨🚨 Error in 🚨 newUser 🚨 function"))
   }
 });
 
-export const restaurantLogin = asyncHandler(async (req,res,next)=>{
+export const login = asyncHandler(async (req,res,next)=>{
     const {email,password}=req.body;
-    const restaurant=await Restaurant.findOne({email});
-    if(restaurant && (await bcrypt.compare(password,restaurant.password))){
+    const user=await User.findOne({email});
+    if(user && (await bcrypt.compare(password,user.password))){
         res.status(200).json({
             success:true,
             data:{
-                ...restaurant,
+                ...user,
                 token:generateToken(),
             }
         })
