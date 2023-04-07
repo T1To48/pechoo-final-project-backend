@@ -1,11 +1,11 @@
 import mongoose from "mongoose";
 
-const userSchema=new mongoose.Schema({
+const UserSchema=new mongoose.Schema({
     name:{
         type:String,
         trim:true,
         required:[true,"please enter your name"],
-        maxLength:[20,"name cannot exceed 20 characters "]
+        maxLength:[20,"name cannot exceed 20 characters"]
     },
     email:{
         type: String,
@@ -54,11 +54,17 @@ const userSchema=new mongoose.Schema({
           if(this.userType==="Driver"){
             return typeof value==="boolean"
           }
-          return false;
+          return true;
         },
         message:"isActive field is only allowed for Driver "
       }
-    }
+    },
+    orders: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "orderModel",
+      }
+    ]
 },{
     versionKey:false,
     toJSON:{
@@ -77,7 +83,12 @@ const userSchema=new mongoose.Schema({
     }
   })
   
-const userModel = mongoose.model("userModel", userSchema);
+// UserSchema.post("save",function(doc,next){
+
+// })
+
+
+const userModel = mongoose.model("userModel", UserSchema);
 
 export default userModel;
 

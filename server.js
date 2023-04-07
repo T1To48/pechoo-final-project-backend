@@ -5,8 +5,10 @@ import cors from "cors";
 import morgan from "morgan";
 
 import connectDB from "./config/db.js";
- import userRouter from "./routes/userRouter.js";
-// import orderRoute from "./routes/orderRoute.js";
+import userRouter from "./routes/userRouter.js";
+import orderRoute from "./routes/orderRoute.js";
+
+import errorHandler from "./middlewares/errorHandler.js";
 
 dotenv.config({ path: "./config/config.env" });
 connectDB();
@@ -23,9 +25,10 @@ app.get("/", (req, res) => {
   res.send("DB CONNECTED");
 });
 
+app.use("/delivery-app/v1", userRouter);
+app.use("/delivery-app/v1/order", orderRoute);
 
- app.use("/delivery-app/v1", userRouter);
-// app.use("/delivey-app", orderRoute);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 

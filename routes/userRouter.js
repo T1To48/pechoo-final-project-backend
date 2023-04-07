@@ -2,14 +2,15 @@ import express from "express";
 import { 
   register, 
   login, 
-  // deleteUser
+  updateUser,
+   deleteUser
  } from "../controllers/userController.js";
 import { protect } from "../middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.route("/user").post(register).get(protect, login);
+router.route("/user").post(register).get(login);
 
-// router.route("/user/:id").delete(protect, deleteUser);
+ router.route("/user/:id").put(protect,updateUser).delete(protect, deleteUser);
 
 export default router;
