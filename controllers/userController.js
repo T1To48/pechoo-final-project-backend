@@ -51,7 +51,7 @@ export const updateUser=asyncHandler(async(req,res,next)=>{
     runValidators:true
   });
   if(!updatedUser){
-    next(new Error("User Not Found !"));
+   return  next(new Error("User Not Found !"));
   }
   res.status(200).json({
     success:true,

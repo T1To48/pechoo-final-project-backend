@@ -10,6 +10,15 @@ const orderStatusEnum = [
 ];
 
 const orderSchema = new mongoose.Schema({
+  restaurantId:{
+    type: mongoose.Schema.Types.ObjectId,
+    required:true,
+    ref: "userModel",
+  },
+  driverId:{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "userModel",
+  },
   customerName: {
     type: String,
     trim: true,
@@ -71,6 +80,8 @@ const orderSchema = new mongoose.Schema({
       }
     }
   });
+
+ 
 
   const orderModel=mongoose.model("orderModel",orderSchema);
 
