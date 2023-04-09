@@ -48,16 +48,15 @@ const UserSchema=new mongoose.Schema({
     },
     isActive:{
       type:Boolean,
-      default:false,
-      validate:{
-        validator:function (value){
-          if(this.userType==="Driver"){
-            return typeof value==="boolean"
-          }
-          return true;
-        },
-        message:"isActive field is only allowed for Driver "
-      }
+      // validate:{
+      //   validator:function (value){
+      //     if(this.userType==="Driver"){
+      //       return typeof value==="boolean"
+      //     }
+          
+      //   },
+      //   message:"isActive field is only allowed for Driver "
+      // }
     },
     orders: [
       {
@@ -83,9 +82,7 @@ const UserSchema=new mongoose.Schema({
     }
   })
   
-// UserSchema.post("save",function(doc,next){
 
-// })
 
 
 const userModel = mongoose.model("userModel", UserSchema);

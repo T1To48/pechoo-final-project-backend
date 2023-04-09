@@ -12,7 +12,6 @@ const orderStatusEnum = [
 const orderSchema = new mongoose.Schema({
   restaurantId:{
     type: mongoose.Schema.Types.ObjectId,
-    required:true,
     ref: "userModel",
   },
   driverId:{
@@ -32,13 +31,16 @@ const orderSchema = new mongoose.Schema({
   customerAddress: {
     addressName: {
       type: String,
+      required: [true, "please provide the Customer's Address"],
     },
     cords: {
       latitude: {
         type: Number,
+        required: [true, "latitude is missing"],
       },
       longitude: {
         type: Number,
+        required: [true, "longitude is missing"],
       },
     },
   },
@@ -53,15 +55,10 @@ const orderSchema = new mongoose.Schema({
   },
   readyTime:{
     type:Number,
-    required:[true,"please provide how much time, does the order need to be ready for delivery"]
   },
   createdAt:{
     type:Date,
     default:new Date(),
-  },
-  isActive:{
-    type:Boolean,
-    default:true,
   }
 },{
     versionKey:false,

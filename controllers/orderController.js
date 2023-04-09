@@ -8,7 +8,7 @@ import { isRestaurant } from "../helpers/isRestaurant.js";
 export const addOrder = asyncHandler(async (req, res, next) => {
   const userId = req.params.userId;
 
-  if (await isRestaurant(userId)) {
+  if (!(await isRestaurant(userId))) {
     return next(new Error("Only Restaurants Allowed, to publish new orders"));
   }
 
@@ -34,13 +34,68 @@ export const addOrder = asyncHandler(async (req, res, next) => {
   });
 });
 
+export const advancedGetOrders = asyncHandler(async (req, res, next) => {
+  const userId = req.params.userId;
+  const userType = (await isRestaurant(userId))
+    ? { restaurantId: userId }
+    : { driverId: userId };
+  // const { orderStatus } = req.query;
+
+const ordersFindObj=req.query?{
+    ...userType,
+    ...req.query,
+  }:{...userType};
+
+
+  const orders = await Order.find(ordersFindObj).populate({
+    path:"driverId",
+    select:"name phone "
+  }).populate({
+    path:"restaurantId",
+    select:"name phone address "
+  });
+  if (!orders) {
+    return next(new Error(`Error getting the ${orderStatus} Orders`));
+  }
+  res.status(200).json({
+    success: true,
+    data: orders,
+  });
+});
+
+export const getOrder = asyncHandler(async (req, res, next) => {
+  const { orderId } = req.params;
+  const order = await Order.findById(orderId);
+
+  if (!order) {
+    next(new Error(`Order ${orderId}, not Found`));
+  }
+});
+
+export const updateOrder = asyncHandler(async (req, res, next) => {
+  const orderId = req.params.orderId;
+  const toUpdate = req.body;
+  const updatedOrder = await Order.findByIdAndUpdate(orderId, toUpdate, {
+    new: true,
+    runValidators: true,
+  });
+  if (!updatedOrder) {
+    return next(new Error(`Error Updating Order ${orderId}`));
+  }
+  res.status(200).json({
+    success: true,
+    data: updatedOrder,
+  });
+});
+
 export const deleteOrder = asyncHandler(async (req, res, next) => {
   const { orderId } = req.params;
-  // if(await isRestaurant(userId)){
-  //     return next(new Error("Only Restaurants Allowed, to delete orders"))
-  // }
+  const { restaurantId } = await Order.findById(orderId);
+  if (!(await isRestaurant(restaurantId || null))) {
+    return next(new Error("Only Restaurants Allowed, to delete orders"));
+  }
 
-  const deletedOrder = await Order.deleteOne({ _id: orderId });
+  const deletedOrder = await Order.deleteOne({ _id: orderId },{new:true});
   if (!deletedOrder) {
     return next(new Error("invalid Order Id"));
   }
@@ -48,7 +103,7 @@ export const deleteOrder = asyncHandler(async (req, res, next) => {
   const updateUsers = await User.updateMany(
     { orders: { $in: [orderId] } },
     { $pull: { orders: orderId } },
-    { new: true, runValidators: true }
+    { new: true,multi:true ,runValidators: true }
   );
   if (!updateUsers) {
     return next(new Error("failed deleting order ID, from Users"));

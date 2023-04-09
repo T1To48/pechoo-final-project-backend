@@ -2,10 +2,13 @@ import bcrypt from "bcryptjs";
 import { generateToken } from "../utils/generateToken.js";
 import asyncHandler from "../middlewares/asyncHandler.js";
 
+import Order from "../models/orderModel.js";
 import User from "../models/userModel.js";
 
+import { isRestaurant } from "../helpers/isRestaurant.js";
+
 export const register = asyncHandler(async (req, res, next) => {
-  const {  password } = req.body;
+  const { password } = req.body;
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
   if (password.length < 8) {
@@ -15,11 +18,15 @@ export const register = asyncHandler(async (req, res, next) => {
     ...req.body,
     password: hashedPassword,
   });
-
+  const { name, email,id } = newUser;
   if (newUser) {
     res.status(200).json({
       success: true,
-      data: newUser,
+      data: {
+        name: name,
+        email: email,
+        id:id
+      },
     });
   } else {
     next(new Error("🚨🚨🚨 Error in 🚨 newUser 🚨 function"));
@@ -28,7 +35,10 @@ export const register = asyncHandler(async (req, res, next) => {
 
 export const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email });
+  const user = await User.findOne({ email }).populate({
+    path: "orders",
+  });
+
   if (user && (await bcrypt.compare(password, user.password))) {
     res.status(200).json({
       success: true,
@@ -42,38 +52,51 @@ export const login = asyncHandler(async (req, res, next) => {
   }
 });
 
- 
-export const updateUser=asyncHandler(async(req,res,next)=>{
+export const updateUser = asyncHandler(async (req, res, next) => {
   const userId = req.params.id;
-  const toUpdate=req.body;
-  const updatedUser=await User.findByIdAndUpdate(userId, toUpdate,{
-    new:true,
-    runValidators:true
+  const toUpdate = req.body;
+  const updatedUser = await User.findByIdAndUpdate(userId, toUpdate, {
+    new: true,
+    runValidators: true,
   });
-  if(!updatedUser){
-   return  next(new Error("User Not Found !"));
+  if (!updatedUser) {
+    return next(new Error(`User ${userId}, Not Found !`));
   }
   res.status(200).json({
-    success:true,
-    data:toUpdate
-  })
-})
+    success: true,
+    data: updatedUser,
+  });
+});
 
 export const deleteUser = asyncHandler(async (req, res, next) => {
   const userId = req.params.id;
-
-  const deletedUser = await User.findByIdAndDelete(userId);
-  
-  if (!deletedUser) {
-    return next(new Error("invalid User Id"));
+  const userType = await isRestaurant(userId)?"restaurantId":"driverId";
+  console.log(userType)
+  if(!userType){
+    next (new Error(`failed detecting userType`))
   }
+  const deleteRestaurantId= await Order.updateMany(
+        { [userType]: userId },
+        { $unset:{[userType]: "removed Account"}},
+        { new: true, multi: true }
+      )
+
+      if(!deleteRestaurantId){
+        next (new Error(`failed removing user Id ${userId}, from Orders`))
+      }
+ 
+
+     
+  const deletedUser = await User.findOneAndDelete({_id:userId},{new:true});
+  if (!deletedUser) {
+    return next(new Error(`invalid User ${userId}`));
+  }
+
+  
 
   res.status(200).json({
     success: true,
-    data: {
-    name:deletedUser.name,
-    email:deletedUser.email
-
-    },
+    data: deletedUser,
+    
   });
 });
