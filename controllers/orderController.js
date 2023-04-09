@@ -5,6 +5,9 @@ import User from "../models/userModel.js";
 
 import { isRestaurant } from "../helpers/isRestaurant.js";
 
+// @desc    create new Order
+// @route   POST /delivery-app/v1/order/user-id/:userId
+// @access  Private (Only userType:"Restaurant" )
 export const addOrder = asyncHandler(async (req, res, next) => {
   const userId = req.params.userId;
 
@@ -34,26 +37,31 @@ export const addOrder = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc    get user's all orders , or filter orders by field as req.query
+// @route   GET /delivery-app/v1/order/user-id/:userId
+// @access  Private
 export const advancedGetOrders = asyncHandler(async (req, res, next) => {
   const userId = req.params.userId;
   const userType = (await isRestaurant(userId))
     ? { restaurantId: userId }
     : { driverId: userId };
-  // const { orderStatus } = req.query;
 
-const ordersFindObj=req.query?{
-    ...userType,
-    ...req.query,
-  }:{...userType};
+  const ordersFindObj = req.query
+    ? {
+        ...userType,
+        ...req.query,
+      }
+    : { ...userType };
 
-
-  const orders = await Order.find(ordersFindObj).populate({
-    path:"driverId",
-    select:"name phone "
-  }).populate({
-    path:"restaurantId",
-    select:"name phone address "
-  });
+  const orders = await Order.find(ordersFindObj)
+    .populate({
+      path: "driverId",
+      select: "name phone ",
+    })
+    .populate({
+      path: "restaurantId",
+      select: "name phone address ",
+    });
   if (!orders) {
     return next(new Error(`Error getting the ${orderStatus} Orders`));
   }
@@ -63,15 +71,26 @@ const ordersFindObj=req.query?{
   });
 });
 
+// @desc    get Order by orderId
+// @route   GET /delivery-app/v1/order/:orderId
+// @access  Private
 export const getOrder = asyncHandler(async (req, res, next) => {
   const { orderId } = req.params;
   const order = await Order.findById(orderId);
-
+  console.log("order", order);
   if (!order) {
     next(new Error(`Order ${orderId}, not Found`));
   }
+
+  res.status(200).json({
+    success: true,
+    data: order,
+  });
 });
 
+// @desc    Update Order by orderId
+// @route   PUT /delivery-app/v1/order/:orderId
+// @access  Private
 export const updateOrder = asyncHandler(async (req, res, next) => {
   const orderId = req.params.orderId;
   const toUpdate = req.body;
@@ -88,6 +107,9 @@ export const updateOrder = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc    get Order by orderId
+// @route   DELETE /delivery-app/v1/order/:orderId
+// @access  Private
 export const deleteOrder = asyncHandler(async (req, res, next) => {
   const { orderId } = req.params;
   const { restaurantId } = await Order.findById(orderId);
@@ -95,7 +117,7 @@ export const deleteOrder = asyncHandler(async (req, res, next) => {
     return next(new Error("Only Restaurants Allowed, to delete orders"));
   }
 
-  const deletedOrder = await Order.deleteOne({ _id: orderId },{new:true});
+  const deletedOrder = await Order.deleteOne({ _id: orderId }, { new: true });
   if (!deletedOrder) {
     return next(new Error("invalid Order Id"));
   }
@@ -103,7 +125,7 @@ export const deleteOrder = asyncHandler(async (req, res, next) => {
   const updateUsers = await User.updateMany(
     { orders: { $in: [orderId] } },
     { $pull: { orders: orderId } },
-    { new: true,multi:true ,runValidators: true }
+    { new: true, multi: true, runValidators: true }
   );
   if (!updateUsers) {
     return next(new Error("failed deleting order ID, from Users"));

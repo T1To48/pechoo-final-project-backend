@@ -7,6 +7,9 @@ import User from "../models/userModel.js";
 
 import { isRestaurant } from "../helpers/isRestaurant.js";
 
+// @desc    Create New User
+// @route   POST /delivery-app/v1/user
+// @access  Public
 export const register = asyncHandler(async (req, res, next) => {
   const { password } = req.body;
   const salt = await bcrypt.genSalt(10);
@@ -18,14 +21,14 @@ export const register = asyncHandler(async (req, res, next) => {
     ...req.body,
     password: hashedPassword,
   });
-  const { name, email,id } = newUser;
+  const { name, email, id } = newUser;
   if (newUser) {
     res.status(200).json({
       success: true,
       data: {
         name: name,
         email: email,
-        id:id
+        id: id,
       },
     });
   } else {
@@ -33,6 +36,9 @@ export const register = asyncHandler(async (req, res, next) => {
   }
 });
 
+// @desc    User Login
+// @route   GET /delivery-app/v1/user
+// @access  Public
 export const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email }).populate({
@@ -52,6 +58,9 @@ export const login = asyncHandler(async (req, res, next) => {
   }
 });
 
+// @desc    Update existing User
+// @route   PUT /delivery-app/v1/user/:id
+// @access  Private
 export const updateUser = asyncHandler(async (req, res, next) => {
   const userId = req.params.id;
   const toUpdate = req.body;
@@ -68,35 +77,36 @@ export const updateUser = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc    Delete User & user ID from relevant Orders
+// @route   DELETE /delivery-app/v1/user/:id
+// @access  Private
 export const deleteUser = asyncHandler(async (req, res, next) => {
   const userId = req.params.id;
-  const userType = await isRestaurant(userId)?"restaurantId":"driverId";
-  console.log(userType)
-  if(!userType){
-    next (new Error(`failed detecting userType`))
+  const userType = (await isRestaurant(userId)) ? "restaurantId" : "driverId";
+  console.log(userType);
+  if (!userType) {
+    next(new Error(`failed detecting userType`));
   }
-  const deleteRestaurantId= await Order.updateMany(
-        { [userType]: userId },
-        { $unset:{[userType]: "removed Account"}},
-        { new: true, multi: true }
-      )
+  const deleteRestaurantId = await Order.updateMany(
+    { [userType]: userId },
+    { $unset: { [userType]: "removed Account" } },
+    { new: true, multi: true }
+  );
 
-      if(!deleteRestaurantId){
-        next (new Error(`failed removing user Id ${userId}, from Orders`))
-      }
- 
+  if (!deleteRestaurantId) {
+    next(new Error(`failed removing user Id ${userId}, from Orders`));
+  }
 
-     
-  const deletedUser = await User.findOneAndDelete({_id:userId},{new:true});
+  const deletedUser = await User.findOneAndDelete(
+    { _id: userId },
+    { new: true }
+  );
   if (!deletedUser) {
     return next(new Error(`invalid User ${userId}`));
   }
 
-  
-
   res.status(200).json({
     success: true,
     data: deletedUser,
-    
   });
 });
