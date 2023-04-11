@@ -7,7 +7,7 @@ import morgan from "morgan";
 import connectDB from "./config/db.js";
 import userRoute from "./routes/userRoute.js";
 import orderRoute from "./routes/orderRoute.js";
-
+import verifyPhone from "./routes/phoneVerificationRoute.js"
 import errorHandler from "./middlewares/errorHandler.js";
 
 dotenv.config({ path: "./config/config.env" });
@@ -27,6 +27,7 @@ app.get("/", (req, res) => {
 
 app.use("/delivery-app/v1", userRoute);
 app.use("/delivery-app/v1/order", orderRoute);
+app.use("/delivery-app/v1/verify", verifyPhone);
 
 app.use(errorHandler);
 
