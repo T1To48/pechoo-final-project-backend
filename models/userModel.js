@@ -26,6 +26,8 @@ const UserSchema = new mongoose.Schema(
       type: Number,
       unique: [true, "Phone Number already exist ,please choose another one"],
       required: [true, "please provide a phone number"],
+      minLength: [9, "password length cannot be less than 8 characters"],
+
     },
     address: {
       addressName: {
