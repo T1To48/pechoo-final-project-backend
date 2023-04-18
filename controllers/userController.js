@@ -45,7 +45,7 @@ export const login = asyncHandler(async (req, res, next) => {
     path: "orders",
   });
 const loggedUser={
-  ...user.toJSON(),
+  ...user,
   password:"****",
   orders:user.orders
 }
