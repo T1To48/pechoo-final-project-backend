@@ -37,24 +37,23 @@ export const register = asyncHandler(async (req, res, next) => {
 });
 
 // @desc    User Login
-// @route   GET /delivery-app/v1/user
+// @route   POST /delivery-app/v1/user
 // @access  Public
 export const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email:email }).populate({
     path: "orders",
   });
-console.log(user)
-// const loggedUser={
-//   ...user,
-//   password:"****",
-//   orders:user.orders
-// }
+const loggedUser={
+  ...user.toJSON(),
+  password:"****",
+  orders:user.orders
+}
   if (user && (await bcrypt.compare(password, user.password))) {
     res.status(200).json({
       success: true,
       data: {
-        user:user,
+        user:loggedUser,
         token: generateToken(user.id),
       }
     });
@@ -88,7 +87,6 @@ export const updateUser = asyncHandler(async (req, res, next) => {
 export const deleteUser = asyncHandler(async (req, res, next) => {
   const userId = req.params.id;
   const userType = (await isRestaurant(userId)) ? "restaurantId" : "driverId";
-  console.log(userType);
   if (!userType) {
     next(new Error(`failed detecting userType`));
   }
