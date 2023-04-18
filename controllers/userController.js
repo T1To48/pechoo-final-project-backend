@@ -44,16 +44,17 @@ export const login = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ email }).populate({
     path: "orders",
   });
-const loggedUser={
-  ...user,
-  password:"****",
-  orders:user.orders
-}
+
+// const loggedUser={
+//   ...user,
+//   password:"****",
+//   orders:user.orders
+// }
   if (user && (await bcrypt.compare(password, user.password))) {
     res.status(200).json({
       success: true,
       data: {
-        user:loggedUser,
+        user:user,
         token: generateToken(),
       }
     });
