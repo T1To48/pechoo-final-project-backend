@@ -49,8 +49,7 @@ const orderSchema = new mongoose.Schema(
       type: Number,
     },
     createdAt: {
-      type: Date,
-      default: new Date(),
+      type: string,
     },
   },
   {
