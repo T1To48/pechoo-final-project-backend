@@ -45,12 +45,12 @@ const orderSchema = new mongoose.Schema(
       default: "Published",
       enum: orderStatusEnum,
     },
-    readyTime: {
-      type: Number,
-    },
-    createdAt: {
-      type: string,
-    },
+    readyTime:Number,
+    createdAtMS:String,
+    createdAt:{
+      type:Date,
+      default: new Date(),
+    }
   },
   {
     versionKey: false,
