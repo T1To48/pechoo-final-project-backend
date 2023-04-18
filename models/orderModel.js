@@ -32,7 +32,7 @@ const orderSchema = new mongoose.Schema(
       type: String,
       required: [true, "please provide an address"],
     },
-    cords: {
+    coords: {
       type: String,
       required: [true, "please provide Coordinates"],
     },
