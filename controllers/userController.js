@@ -44,7 +44,7 @@ export const login = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ email }).populate({
     path: "orders",
   });
-
+console.log(user)
 // const loggedUser={
 //   ...user,
 //   password:"****",
@@ -55,7 +55,7 @@ export const login = asyncHandler(async (req, res, next) => {
       success: true,
       data: {
         user:user,
-        token: generateToken(),
+        token: generateToken(user.id),
       }
     });
   } else {
