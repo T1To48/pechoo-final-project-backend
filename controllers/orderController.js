@@ -60,7 +60,7 @@ export const advancedGetOrders = asyncHandler(async (req, res, next) => {
     })
     .populate({
       path: "restaurantId",
-      select: "name phone address ",
+      select: "name phone address coords",
     });
   if (!orders) {
     return next(new Error(`Error getting the ${orderStatus} Orders`));

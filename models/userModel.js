@@ -27,38 +27,15 @@ const UserSchema = new mongoose.Schema(
       unique: [true, "Phone Number already exist ,please choose another one"],
       required: [true, "please provide a phone number"],
       minLength: [9, "password length cannot be less than 8 characters"],
-
     },
-    address: {
-      addressName: {
-        type: String,
-      },
-      cords: {
-        latitude: {
-          type: Number,
-        },
-        longitude: {
-          type: Number,
-        },
-      },
-    },
+    address: String,
+    coords: String,
     userType: {
       type: String,
       require: [true, "Please choose a role: Restaurant or Driver"],
       enum: ["Restaurant", "Driver"],
     },
-    isActive: {
-      type: Boolean,
-      // validate:{
-      //   validator:function (value){
-      //     if(this.userType==="Driver"){
-      //       return typeof value==="boolean"
-      //     }
-
-      //   },
-      //   message:"isActive field is only allowed for Driver "
-      // }
-    },
+    isActive: Boolean,
     orders: [
       {
         type: mongoose.Schema.Types.ObjectId,

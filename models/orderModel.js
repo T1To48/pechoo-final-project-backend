@@ -29,20 +29,12 @@ const orderSchema = new mongoose.Schema(
       required: [true, "please provide a phone number"],
     },
     customerAddress: {
-      addressName: {
-        type: String,
-        required: [true, "please provide the Customer's Address"],
-      },
-      cords: {
-        latitude: {
-          type: Number,
-          required: [true, "latitude is missing"],
-        },
-        longitude: {
-          type: Number,
-          required: [true, "longitude is missing"],
-        },
-      },
+      type: String,
+      required: [true, "please provide an address"],
+    },
+    cords: {
+      type: String,
+      required: [true, "please provide Coordinates"],
     },
     price: {
       type: Number,
