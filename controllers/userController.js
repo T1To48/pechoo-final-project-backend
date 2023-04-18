@@ -12,7 +12,7 @@ import { isRestaurant } from "../helpers/isRestaurant.js";
 // @access  Public
 export const register = asyncHandler(async (req, res, next) => {
   const { password } = req.body;
-  const salt = await bcrypt.genSalt(6);
+  const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
   if (password.length < 8) {
     return next(new Error("password length cannot be less than 8 characters "));
@@ -41,7 +41,7 @@ export const register = asyncHandler(async (req, res, next) => {
 // @access  Public
 export const login = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
-  const user = await User.findOne({ email }).populate({
+  const user = await User.findOne({ email:email }).populate({
     path: "orders",
   });
 console.log(user)
