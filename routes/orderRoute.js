@@ -7,6 +7,7 @@ import {
   advancedGetOrders,
   updateOrder,
   deleteOrder,
+  getAllOrders
 } from "../controllers/orderController.js";
 import {
   updateOrderAccepted,
@@ -14,7 +15,7 @@ import {
 } from "../controllers/orderStatusController.js";
 
 const router = express.Router();
-
+router.get("/published-orders",getAllOrders)
 router
   .route("/user-id/:userId")
   .post(protect, addOrder)

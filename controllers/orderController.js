@@ -139,3 +139,15 @@ export const deleteOrder = asyncHandler(async (req, res, next) => {
     },
   });
 });
+
+
+export const getAllOrders=asyncHandler(async (req, res, next)=> {
+  const allOrders=await Order.find({orderStatus:"Published"});
+  if (!allOrders) {
+    return next(new Error("No Orders Found!"));
+  }
+  res.status(200).json({
+    success: true,
+    data: allOrders,
+  });
+}) 
