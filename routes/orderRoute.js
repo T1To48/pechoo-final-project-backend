@@ -15,7 +15,7 @@ import {
 } from "../controllers/orderStatusController.js";
 
 const router = express.Router();
-router.get("/published-orders",getAllOrders)
+router.get("/published-orders",protect,getAllOrders)
 router
   .route("/user-id/:userId")
   .post(protect, addOrder)
