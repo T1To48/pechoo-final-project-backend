@@ -143,14 +143,14 @@ export const deleteOrder = asyncHandler(async (req, res, next) => {
 
 export const getAllOrders=asyncHandler(async (req, res, next)=> {
   const publishedOrders=await Order.find({orderStatus:"Published"});
-  const readyFordeliveryOrders=await Order.find({orderStatus:"Ready For Delivery"});
-  if (!publishedOrders||readyFordeliveryOrders) {
+  const readyForDeliveryOrders=await Order.find({orderStatus:"Ready For Delivery"});
+  if (!publishedOrders||!readyForDeliveryOrders) {
     return next(new Error("No Orders Found!"));
   }
-
+  console.log(publishedOrders.concat(readyForDeliveryOrders))
   res.status(200).json({
     success: true,
-    data: publishedOrders.concat(readyFordeliveryOrders),
+    data: publishedOrders.concat(readyForDeliveryOrders),
     
   });
 }) 
