@@ -150,7 +150,7 @@ export const getAllOrders=asyncHandler(async (req, res, next)=> {
   console.log(publishedOrders.concat(readyForDeliveryOrders))
   res.status(200).json({
     success: true,
-    data: publishedOrders.concat(readyForDeliveryOrders),
+    data: readyForDeliveryOrders.concat(publishedOrders),
     
   });
 }) 
