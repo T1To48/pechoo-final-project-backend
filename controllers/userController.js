@@ -54,7 +54,7 @@ const loggedUser={
       success: true,
       data: {
         user:loggedUser,
-        token: generateToken(user.id),
+        token: generateToken(),
       }
     });
   } else {
