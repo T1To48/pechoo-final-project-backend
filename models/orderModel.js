@@ -27,6 +27,7 @@ const orderSchema = new mongoose.Schema(
     customerPhone: {
       type: Number,
       required: [true, "please provide a phone number"],
+      maxLength: [9, "password length cannot be less than 8 characters"],
     },
     customerAddress: {
       type: String,
