@@ -44,7 +44,7 @@ export const login = asyncHandler(async (req, res, next) => {
   const user = await User.findOne({ email:email }).populate({
     path: "orders",
   });
-  if(!user) next(new Error("invalid Email!"));
+  if(!user) next(new Error("Email Not Found"));
 const loggedUser={
   ...user.toJSON(),
   password:"****",
@@ -59,7 +59,7 @@ const loggedUser={
       }
     });
   } else {
-    next(new Error("invalid credentials!"));
+    next(new Error("Incorrect Password!"));
   }
 });
 
