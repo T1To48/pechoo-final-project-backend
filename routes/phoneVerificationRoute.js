@@ -7,7 +7,7 @@ const router = express.Router();
 const sendCodeToEmail = asyncHandler(async (req, res, next) => {
   const { userEmail } = req.params;
 
-  let verfiCode = Math.floor(Math.random() * 9999) + 1000;
+  let verfiCode = Math.floor(Math.random() * 9000) + 1000;
   const options = {
     method: "POST",
     url: "https://rapidprod-sendgrid-v1.p.rapidapi.com/mail/send",
